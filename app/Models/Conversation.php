@@ -48,4 +48,20 @@ class Conversation extends Model
         $otherUser = $this->users()->where('user_id', '!=', $currentUser?->id)->first();
         return $otherUser?->name ?? 'Unknown User';
     }
+
+    public function getUnreadCountForUser($user)
+    {
+        $lastReadAt = $this
+            ->users()
+            ->where('user_id', $user->id)
+            ->first()
+            ->pivot
+            ->last_read_at;
+
+        return $this
+            ->messages()
+            ->where('user_id', '!=', $user->id)
+            ->when($lastReadAt, fn($query) => $query->where('created_at', '>', $lastReadAt))
+            ->count();
+    }
 }
