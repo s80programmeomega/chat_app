@@ -46,31 +46,10 @@
     </div>
     @endif
 </div>
-
 <script>
-    let currentChannel = null;
-
-    // Listen for conversation selection
-    document.addEventListener('livewire:init', () => {
-        Livewire.on('joinConversation', (conversationId) => {
-            // Leave previous channel
-            if (currentChannel) {
-                window.Echo.leave(`conversation.${currentChannel}`);
-            }
-
-            // Join new conversation channel
-            currentChannel = conversationId[0];
-            window.Echo.join(`conversation.${currentChannel}`)
-                .listen('MessageSent', (e) => {
-                    // Notify Livewire component about new message
-                    Livewire.dispatch('newMessageReceived', e.message);
-
-                    // Auto-scroll to bottom
-                    const container = document.getElementById('messages-container');
-                    if (container) {
-                        container.scrollTop = container.scrollHeight;
-                    }
-                });
-        });
-    });
+    window.Laravel = {
+        user: {
+            id: {{ auth()->id() }}
+        }
+    };
 </script>

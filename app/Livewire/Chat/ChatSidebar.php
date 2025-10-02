@@ -25,22 +25,22 @@ class ChatSidebar extends Component
     }
 
     #[On('conversationUpdated')]
-    public function refreshConversations()
+    public function refreshConversations($message)
     {
-        // Refresh the component when new messages arrive
+        $this->selectedConversationId = $this->selectedConversationId;
     }
 
-    #[On('messageReceived')]
-    public function markAsRead($conversationId)
+    #[On('newMessageReceived')]
+    public function markAsRead(...$params)
     {
-        if ($this->selectedConversationId == $conversationId) {
-            Auth::user()->conversations()->updateExistingPivot($conversationId, [
+        if (isset($params[0]) && $this->selectedConversationId == $params[0]) {
+            Auth::user()->conversations()->updateExistingPivot($params[0], [
                 'last_read_at' => now()
             ]);
         }
     }
 
-    #[On('sendMessage')]
+    #[On('newMessage')]
     public function render()
     {
         $conversations = Auth::user()

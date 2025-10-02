@@ -1,3 +1,5 @@
+
+
 <form wire:submit="sendMessage" class="p-3">
     <div class="input-group">
         <input

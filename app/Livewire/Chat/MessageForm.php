@@ -3,10 +3,13 @@
 namespace App\Livewire\Chat;
 
 use App\Events\MessageSent;
+use App\Events\ConversationUpdated;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\Attributes\On;
+
+use function Symfony\Component\String\b;
 
 class MessageForm extends Component
 {
@@ -40,12 +43,13 @@ class MessageForm extends Component
 
         // Broadcast the event
         broadcast(new MessageSent($message));
+        broadcast(new ConversationUpdated($message));
 
-        $this->dispatch('newMessage', $message->id);
+        $this->dispatch('sendMessage', $message->id);
 
         $this->content = '';
         $this->dispatch('messageAdded');
-        $this->dispatch('conversationUpdated');
+        $this->dispatch('conversationUpdated', $message);
     }
 
     public function render()

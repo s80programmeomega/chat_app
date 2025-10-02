@@ -6,12 +6,12 @@
     <div class="list-group list-group-flush">
         @forelse($conversations as $conversation)
         <button wire:click="selectConversation({{ $conversation->id }})"
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-start {{ $selectedConversationId == $conversation->id ? 'active' : '' }}">
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-start btn btn-outline-secondary {{ $selectedConversationId == $conversation->id ? 'active' : '' }}">
             <div class="ms-2 me-auto">
                 <div class="fw-bold d-flex justify-content-between align-items-center">
                     {{ $conversation->getDisplayName(auth()->user()) }}
                     @if($conversation->unread_count > 0)
-                    <span class="badge bg-primary rounded-pill">{{ $conversation->unread_count }}</span>
+                    <span class="badge bg-primary rounded-pill mx-3 p-2">{{ $conversation->unread_count }}</span>
                     @endif
                 </div>
                 @if($conversation->latestMessage)
