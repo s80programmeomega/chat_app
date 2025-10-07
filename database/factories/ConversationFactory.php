@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ConversationFactory extends Factory
@@ -9,8 +10,12 @@ class ConversationFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->optional(0.3)->words(2, true), // 30% chance of having a name
-            'is_group' => fake()->boolean(30), // 30% chance of being a group chat
+            'name' => fake()->optional(0.3)->words(2, true),
+            'is_group' => fake()->boolean(30),
+            'created_by' => User::factory(),
+            'is_private' => fake()->boolean(20),
+            'messaging_enabled' => fake()->boolean(90),
+            'description' => fake()->optional(0.4)->sentence(),
         ];
     }
 
@@ -27,6 +32,7 @@ class ConversationFactory extends Factory
         return $this->state([
             'name' => null,
             'is_group' => false,
+            'is_private' => false,
         ]);
     }
 }

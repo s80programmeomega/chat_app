@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Conversation;
+use App\Models\ConversationJoinRequest;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class ConversationPolicy
+class ConversationJoinRequestPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class ConversationPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Conversation $conversation): bool
+    public function view(User $user, ConversationJoinRequest $conversationJoinRequest): bool
     {
         return false;
     }
@@ -35,7 +35,7 @@ class ConversationPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Conversation $conversation): bool
+    public function update(User $user, ConversationJoinRequest $conversationJoinRequest): bool
     {
         return false;
     }
@@ -43,7 +43,7 @@ class ConversationPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Conversation $conversation): bool
+    public function delete(User $user, ConversationJoinRequest $conversationJoinRequest): bool
     {
         return false;
     }
@@ -51,7 +51,7 @@ class ConversationPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Conversation $conversation): bool
+    public function restore(User $user, ConversationJoinRequest $conversationJoinRequest): bool
     {
         return false;
     }
@@ -59,18 +59,8 @@ class ConversationPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Conversation $conversation): bool
+    public function forceDelete(User $user, ConversationJoinRequest $conversationJoinRequest): bool
     {
         return false;
-    }
-
-    public function manage(User $user, Conversation $conversation): bool
-    {
-        return $conversation->is_group && $conversation->isUserAdmin($user);
-    }
-
-    public function message(User $user, Conversation $conversation): bool
-    {
-        return $conversation->canUserMessage($user);
     }
 }

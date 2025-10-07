@@ -49,11 +49,24 @@ class User extends Authenticatable
     // Relationships
     public function conversations()
     {
-        return $this->belongsToMany(Conversation::class)->withTimestamps();
+        return $this
+            ->belongsToMany(Conversation::class)
+            ->withPivot(['is_admin', 'last_read_at'])
+            ->withTimestamps();
     }
 
     public function messages()
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function createdConversations()
+    {
+        return $this->hasMany(Conversation::class, 'created_by');
+    }
+
+    public function joinRequests()
+    {
+        return $this->hasMany(ConversationJoinRequest::class);
     }
 }

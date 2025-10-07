@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
+use Illuminate\Support\Facades\Broadcast;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,6 +23,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
 });
+
+// Broadcast::routes(['middleware' => ['auth']]);
 
 
 require __DIR__.'/auth.php';

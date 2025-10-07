@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ConversationSeeder::class,
             MessageSeeder::class,
+            ConversationJoinRequestSeeder::class,
         ]);
     }
 }

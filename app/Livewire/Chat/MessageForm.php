@@ -3,57 +3,72 @@
 namespace App\Livewire\Chat;
 
 use App\Events\MessageSent;
-use App\Events\ConversationUpdated;
+use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Livewire\Attributes\On;
-
-use function Symfony\Component\String\b;
+use Livewire\Component;
 
 class MessageForm extends Component
 {
     public $conversationId;
     public $content = '';
+    public $conversation;
+
+    public function mount($conversationId = null)
+    {
+        $this->conversationId = $conversationId;
+        $this->loadConversation();
+    }
 
     #[On('conversationSelected')]
     public function setConversation($conversationId)
     {
         $this->conversationId = $conversationId;
+        $this->loadConversation();
+    }
+
+    private function loadConversation()
+    {
+        if ($this->conversationId) {
+            $this->conversation = Conversation::find($this->conversationId);
+        }
     }
 
     public function sendMessage()
     {
-        $this->validate([
-            'content' => 'required|string|max:1000'
-        ]);
+        if (!$this->conversationId || !$this->conversation) return;
+
+        // Check if user can message
+        if (!$this->conversation->canUserMessage(Auth::user())) {
+            session()->flash('error', 'Messaging is disabled for this group.');
+            return;
+        }
+
+        $this->validate(['content' => 'required|string|max:1000']);
 
         $message = Message::create([
             'conversation_id' => $this->conversationId,
-            'user_id' => Auth::user()->id,
-            'content' => $this->content
+            'user_id' => Auth::id(),
+            'content' => $this->content,
         ]);
 
-        Auth::user()->conversations()->updateExistingPivot($this->conversationId, [
-            'last_read_at' => now()
+        broadcast(new MessageSent($message))->toOthers();
+
+        $this->reset('content');
+        $this->dispatch('messageSent', [
+            'conversationId' => $this->conversationId,
+            'userId' => Auth::id()
         ]);
-
-        // Load the user relationship for broadcasting
-        $message->load('user');
-
-        // Broadcast the event
-        broadcast(new MessageSent($message));
-        broadcast(new ConversationUpdated($message));
-
-        $this->dispatch('sendMessage', $message->id);
-
-        $this->content = '';
-        $this->dispatch('messageAdded');
-        $this->dispatch('conversationUpdated', $message);
+    
     }
 
     public function render()
     {
-        return view('livewire.chat.message-form');
+        $canMessage = $this->conversation ? $this->conversation->canUserMessage(Auth::user()) : true;
+
+        return view('livewire.chat.message-form', [
+            'canMessage' => $canMessage
+        ]);
     }
 }

@@ -7,6 +7,9 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
+// Custom styles
+@import '../css/custom.css';
+
 
 .fade-out {
     animation: fadeOut 2s linear;

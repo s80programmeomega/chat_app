@@ -30,10 +30,16 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return [
-            // new PrivateChannel('channel-name'),
+        $channels = [
             new PresenceChannel('conversation.' . $this->message->conversation_id),
         ];
+
+        // Add private channels for all users in the conversation
+        foreach ($this->message->conversation->users as $user) {
+            $channels[] = new PrivateChannel('user.' . $user->id);
+        }
+
+        return $channels;
     }
 
     public function broadcastWith(): array
